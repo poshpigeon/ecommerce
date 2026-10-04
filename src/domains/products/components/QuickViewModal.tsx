@@ -71,7 +71,7 @@ export default function QuickViewModal({ product, isOpen, onClose }) {
           
           <div className="space-y-6 mb-10">
             <p className="text-xs text-zinc-500 leading-relaxed font-light italic">
-              "{product.description || "A meticulously crafted piece designed for both form and function. This garment represents the pinnacle of contemporary fashion engineering."}"
+              &quot;{product.description || "A meticulously crafted piece designed for both form and function. This garment represents the pinnacle of contemporary fashion engineering."}&quot;
             </p>
           </div>
 

@@ -36,30 +36,24 @@ export function usePagination<T>({
 
   const totalItems = items?.length || 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-
-  // Reset to page 1 if current page becomes invalid (e.g. after search/filter)
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(1);
-    }
-  }, [totalPages, currentPage]);
+  const activePage = currentPage > totalPages ? 1 : currentPage;
 
   const paginatedItems = useMemo(() => {
     if (!items || items.length === 0) return [];
-    const start = (currentPage - 1) * pageSize;
+    const start = (activePage - 1) * pageSize;
     return items.slice(start, start + pageSize);
-  }, [items, currentPage, pageSize]);
+  }, [items, activePage, pageSize]);
 
   const handlePageSizeChange = (newSize: number) => {
     setPageSize(newSize);
     setCurrentPage(1);
   };
 
-  const startIndex = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const endIndex = Math.min(currentPage * pageSize, totalItems);
+  const startIndex = totalItems === 0 ? 0 : (activePage - 1) * pageSize + 1;
+  const endIndex = Math.min(activePage * pageSize, totalItems);
 
   return {
-    currentPage,
+    currentPage: activePage,
     setCurrentPage,
     pageSize,
     setPageSize: handlePageSizeChange,

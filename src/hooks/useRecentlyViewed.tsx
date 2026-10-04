@@ -1,24 +1,24 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useSyncExternalStore } from 'react';
+
+const emptySubscribe = () => () => {};
+const useHasMounted = () => useSyncExternalStore(emptySubscribe, () => true, () => false);
 
 const RecentlyViewedContext = createContext<any>(undefined);
 
 export function RecentlyViewedProvider({ children }) {
-  const [recentItems, setRecentItems] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('recentlyViewed');
-    if (saved) {
-      try {
-        setRecentItems(JSON.parse(saved));
-      } catch (e) {
-        console.error('Error loading recently viewed:', e);
-      }
+  const [recentItems, setRecentItems] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem('recentlyViewed');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Error loading recently viewed:', e);
+      return [];
     }
-    setIsLoaded(true);
-  }, []);
+  });
+  const isLoaded = useHasMounted();
 
   const addRecentlyViewed = (product) => {
     setRecentItems((prev) => {

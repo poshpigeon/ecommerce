@@ -6,15 +6,14 @@ import { usePathname } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { handleSignOut } from '@/app/actions';
 
+const emptySubscribe = () => () => {};
+const useHasMounted = () => React.useSyncExternalStore(emptySubscribe, () => true, () => false);
+
 const MobileNav = ({ user, signInUrl }) => {
   const pathname = usePathname();
   const { getCartCount } = useCart();
-  const [mounted, setMounted] = React.useState(false);
+  const mounted = useHasMounted();
   const cartCount = getCartCount();
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const navItems = [
     { href: '/', label: 'HOME', icon: <HomeIcon />, isExternal: false },

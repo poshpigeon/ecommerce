@@ -1,24 +1,24 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useSyncExternalStore } from 'react';
+
+const emptySubscribe = () => () => {};
+const useHasMounted = () => useSyncExternalStore(emptySubscribe, () => true, () => false);
 
 const WishlistContext = createContext<any>(undefined);
 
 export function WishlistProvider({ children }) {
-  const [wishlistItems, setWishlistItems] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('wishlist');
-    if (saved) {
-      try {
-        setWishlistItems(JSON.parse(saved));
-      } catch (e) {
-        console.error('Error loading wishlist:', e);
-      }
+  const [wishlistItems, setWishlistItems] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem('wishlist');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Error loading wishlist:', e);
+      return [];
     }
-    setIsLoaded(true);
-  }, []);
+  });
+  const isLoaded = useHasMounted();
 
   useEffect(() => {
     if (isLoaded) {

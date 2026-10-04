@@ -200,7 +200,7 @@ export default function Navbar({ user, signInUrl }) {
               {isCategoryMenuOpen && (
                 <div className="absolute left-1/2 -translate-x-1/2 top-9 mt-1 w-64 bg-white border border-zinc-200 rounded-2xl shadow-2xl p-3 grid grid-cols-1 gap-1 z-[150] animate-deploy">
                   <div className="px-3 py-1.5 border-b border-zinc-100 text-[8px] font-black uppercase tracking-widest text-zinc-400">
-                    Women's Apparel Range
+                    Women&apos;s Apparel Range
                   </div>
                   {CATEGORY_ITEMS.map((cat) => {
                     const IconComponent = cat.Icon;
