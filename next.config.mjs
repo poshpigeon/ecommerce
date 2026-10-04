@@ -21,7 +21,7 @@ const nextConfig = {
         source: '/:path*',
         headers: [
           {
-            // Prevent this site from being embedded in an iframe (clickjacking)
+            // Prevent frame embedding / clickjacking
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
           },
@@ -31,19 +31,41 @@ const nextConfig = {
             value: 'nosniff',
           },
           {
-            // Control how much referrer info is sent to third parties
+            // Control referrer information sent to third parties
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
           {
-            // Restrict access to browser features
+            // Restrict sensitive browser features
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=(self)',
           },
           {
-            // Force HTTPS for 1 year; include subdomains
+            // Force HTTPS for 1 year with subdomains included
             key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains',
+            value: 'max-age=31536000; includeSubDomains; preload',
+          },
+          {
+            // Prevent XSS attacks with Content-Security-Policy
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://cdn.sanity.io",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com data:",
+              "img-src 'self' data: blob: https://cdn.sanity.io https://*.razorpay.com https://images.unsplash.com",
+              "connect-src 'self' https://*.sanity.io https://api.razorpay.com https://lumberjack.razorpay.com https://api.exchangerate-api.com https://auth.workos.com",
+              "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'self'",
+            ].join('; '),
+          },
+          {
+            // Prevent cross-domain script execution & site isolation hardening
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
           },
         ],
       },

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { withAuth } from '@workos-inc/authkit-nextjs';
+import { rateLimit } from '@/shared/lib/rateLimit';
 import { generateOrderId, razorpay } from '@/shared/lib/razorpay';
 import { orderService } from '@/domains/orders/services/order.service';
 import { checkoutService } from '@/domains/orders/services/checkout.service';
@@ -21,6 +22,14 @@ import {
 // even though the storefront already previewed it.
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'anonymous';
+    const limitCheck = rateLimit(ip, 'create-order', 10, 60000); // 10 order attempts per minute per IP
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many order requests. Please wait a minute and try again.' },
+        { status: 429 }
+      );
+    }
     // Check if there is an authenticated user session
     let user = null;
     let customer = null;

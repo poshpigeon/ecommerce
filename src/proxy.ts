@@ -32,7 +32,9 @@ export default async function middleware(request: NextRequest, event: NextFetchE
   }
 
   // Dynamically derive redirectUri from current request host & protocol so all mapped WorkOS URLs work
-  const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
+  const rawHost = request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host;
+  // Sanitize host to prevent Host Header Injection attacks (strip invalid characters)
+  const host = rawHost.split(',')[0].trim().replace(/[^a-zA-Z0-9.:-]/g, '');
   const proto = request.headers.get('x-forwarded-proto') || (request.url.startsWith('https') ? 'https' : 'http');
   const dynamicOrigin = host ? `${proto}://${host}` : request.nextUrl.origin;
 

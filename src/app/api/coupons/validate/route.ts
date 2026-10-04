@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { couponService } from '@/domains/coupons/services/coupon.service';
 import { pricingService } from '@/domains/orders/services/pricing.service';
+import { rateLimit } from '@/shared/lib/rateLimit';
 import {
   calculateTotals,
   evaluateCoupon,
@@ -8,17 +9,17 @@ import {
   normalizeCode,
 } from '@/domains/coupons/lib/discount';
 
-/**
- * Validates a promo code against the current cart and returns the resulting
- * totals.
- *
- * The cart is re-priced from Sanity before evaluation, so the number shown here
- * is the same number `POST /api/orders` will charge. This endpoint is a
- * preview: the order route repeats every one of these checks before trusting a
- * single rupee of it.
- */
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'anonymous';
+    const limitCheck = rateLimit(ip, 'validate-coupon', 15, 60000); // 15 attempts per minute per IP
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many promo code attempts. Please wait a minute and try again.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const code = normalizeCode(body?.code || '');
     const email = body?.email || null;

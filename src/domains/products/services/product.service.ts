@@ -1,10 +1,11 @@
 import { client } from '@/shared/lib/sanity';
+import { cache } from 'react';
 
 export const productService = {
   /**
    * Fetch all products with optional GROQ filtering
    */
-  async getProducts(filter?: string) {
+  getProducts: cache(async (filter?: string) => {
     const query = filter 
       ? `*[_type == "product" && ${filter}]` 
       : `*[_type == "product"]`;
@@ -25,12 +26,12 @@ export const productService = {
         variants
       }
     `);
-  },
+  }),
 
   /**
    * Fetch a single product by its slug
    */
-  async getProductBySlug(slug: string) {
+  getProductBySlug: cache(async (slug: string) => {
     return await client.fetch(`
       *[_type == "product" && slug.current == $slug][0] {
         _id,
@@ -46,12 +47,12 @@ export const productService = {
         variants
       }
     `, { slug });
-  },
+  }),
 
   /**
    * Fetch related products within the same category
    */
-  async getRelatedProducts(category: string, currentId: string) {
+  getRelatedProducts: cache(async (category: string, currentId: string) => {
     return await client.fetch(`
       *[_type == "product" && category->name == $category && _id != $currentId][0...4] {
         _id, 
@@ -62,12 +63,12 @@ export const productService = {
         "category": category->name
       }
     `, { category, currentId });
-  },
+  }),
 
   /**
    * Fetch products flagged as featured
    */
-  async getFeaturedProducts() {
+  getFeaturedProducts: cache(async () => {
     return await client.fetch(`
       *[_type == "product" && flags.isFeatured == true][0...8] {
         _id, 
@@ -78,5 +79,5 @@ export const productService = {
         "category": category->name
       }
     `);
-  }
+  })
 };

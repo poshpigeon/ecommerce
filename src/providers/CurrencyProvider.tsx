@@ -47,13 +47,23 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Fetch dynamic exchange rate from server-side cache
+    // Fetch dynamic exchange rate (cached in sessionStorage for 1 hour to prevent redundant API hits)
     const fetchDynamicRate = async () => {
       try {
+        const cachedRate = sessionStorage.getItem('exchange_rate_myr');
+        const cachedTime = sessionStorage.getItem('exchange_rate_time');
+        const now = Date.now();
+        if (cachedRate && cachedTime && now - parseInt(cachedTime, 10) < 3600000) {
+          setRate(parseFloat(cachedRate));
+          return;
+        }
+
         const response = await fetch('/api/exchange-rate');
         const data = await response.json();
         if (data.success && typeof data.rate === 'number') {
           setRate(data.rate);
+          sessionStorage.setItem('exchange_rate_myr', data.rate.toString());
+          sessionStorage.setItem('exchange_rate_time', now.toString());
         }
       } catch (err) {
         console.warn('Failed to fetch dynamic exchange rate:', err);
@@ -68,6 +78,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       setCurrencyState(savedCurrency);
       setIsLoaded(true);
     } else {
+      const cachedGeoCurrency = sessionStorage.getItem('detected_geo_currency');
+      if (cachedGeoCurrency === 'INR' || cachedGeoCurrency === 'MYR') {
+        setCurrencyState(cachedGeoCurrency);
+        setIsLoaded(true);
+        return;
+      }
+
       const detectLocationCurrency = async () => {
         try {
           // 1. Server-side VPN/IP geo headers detection
@@ -76,11 +93,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
           if (geoData.success && geoData.country) {
             if (geoData.country === 'MY') {
               setCurrencyState('MYR');
+              sessionStorage.setItem('detected_geo_currency', 'MYR');
               setIsLoaded(true);
               return;
             }
             if (geoData.country === 'IN') {
               setCurrencyState('INR');
+              sessionStorage.setItem('detected_geo_currency', 'INR');
               setIsLoaded(true);
               return;
             }
@@ -106,11 +125,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
           if (countryCode) {
             if (countryCode === 'MY') {
               setCurrencyState('MYR');
+              sessionStorage.setItem('detected_geo_currency', 'MYR');
               setIsLoaded(true);
               return;
             }
             if (countryCode === 'IN') {
               setCurrencyState('INR');
+              sessionStorage.setItem('detected_geo_currency', 'INR');
               setIsLoaded(true);
               return;
             }
@@ -121,11 +142,13 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
           if (tz) {
             if (tz.includes('Kuala_Lumpur')) {
               setCurrencyState('MYR');
+              sessionStorage.setItem('detected_geo_currency', 'MYR');
               setIsLoaded(true);
               return;
             }
             if (tz.includes('Kolkata') || tz.includes('Calcutta')) {
               setCurrencyState('INR');
+              sessionStorage.setItem('detected_geo_currency', 'INR');
               setIsLoaded(true);
               return;
             }

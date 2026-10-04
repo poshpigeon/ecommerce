@@ -1,10 +1,11 @@
 import { client } from '@/shared/lib/sanity';
+import { cache } from 'react';
 
 export const cmsService = {
   /**
    * Fetch structured homepage data including hero, collections, and trending products
    */
-  async getHomePageData() {
+  getHomePageData: cache(async () => {
     return await client.fetch(`
       *[_type == "homePage"][0] {
         hero,
@@ -23,5 +24,5 @@ export const cmsService = {
         announcement
       }
     `);
-  }
+  })
 };
