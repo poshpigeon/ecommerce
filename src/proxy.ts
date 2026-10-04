@@ -1,10 +1,6 @@
 import { authkitProxy } from '@workos-inc/authkit-nextjs';
 import { NextRequest, NextResponse, NextFetchEvent } from 'next/server';
 
-const authkit = authkitProxy({
-  redirectUri: process.env.WORKOS_REDIRECT_URI || 'http://localhost:3000/callback',
-});
-
 export default async function middleware(request: NextRequest, event: NextFetchEvent) {
   const { pathname } = request.nextUrl;
 
@@ -35,6 +31,18 @@ export default async function middleware(request: NextRequest, event: NextFetchE
     }
   }
 
+  // Dynamically derive redirectUri from current request host & protocol so all mapped WorkOS URLs work
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
+  const proto = request.headers.get('x-forwarded-proto') || (request.url.startsWith('https') ? 'https' : 'http');
+  const dynamicOrigin = host ? `${proto}://${host}` : request.nextUrl.origin;
+
+  const envRedirectUri = process.env.WORKOS_REDIRECT_URI;
+  const isVercelFallback = envRedirectUri && envRedirectUri.includes('ecommerce-tawny-three-73.vercel.app');
+
+  const redirectUri = envRedirectUri && !isVercelFallback ? envRedirectUri : `${dynamicOrigin}/callback`;
+
+  const authkit = authkitProxy({ redirectUri });
+
   return authkit(request, event);
 }
 
@@ -44,3 +52,4 @@ export const config = {
     '/(api|trpc)(.*)'
   ]
 };
+
