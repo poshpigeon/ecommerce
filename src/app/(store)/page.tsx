@@ -110,7 +110,7 @@ export default async function Homepage() {
           <HeroSlider images={homePage?.hero?.images || []} />
         </div>
 
-        <Container className="relative z-10 w-full py-6 sm:py-10 lg:py-24">
+        <Container className="relative z-10 w-full py-4 sm:py-6 lg:py-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-4 sm:space-y-6 max-w-xl text-center lg:text-left mx-auto lg:mx-0">
               <span className="technical text-onyx tracking-[0.3em] sm:tracking-[0.4em] uppercase font-bold text-[9px] sm:text-[10px]">Posh Pigeon Women&apos;s Apparel</span>

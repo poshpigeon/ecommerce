@@ -24,21 +24,24 @@ export function formatINR(priceInINR: number) {
 
 export const BRAND = {
   name: 'Posh Pigeon',
-  legalName: 'Posh Pigeon Collective',
+  legalName: 'POSH PIGEON',
+  udyamRegistrationNo: 'UDYAM-TN-02-0499605',
   slogan: 'Premium Women\'s Apparel — Leggings, Sarees & Nighties',
   url: SITE_URL,
   logo: siteUrl('/images/logo-icon.png'),
   ogImage: siteUrl('/images/logo-full.png'),
   email: 'support@poshpigeon.in',
-  phone: '+91-98765-43210',
+  phone: '+91 8428098162',
   sameAs: [
     'https://www.instagram.com/poshpigeon',
     'https://twitter.com/poshpigeon',
   ],
   address: {
     '@type': 'PostalAddress',
+    streetAddress: 'No.76/41, Block Periyanna Street, Seven Wells',
     addressLocality: 'Chennai',
     addressRegion: 'Tamil Nadu',
+    postalCode: '600001',
     addressCountry: 'IN',
   },
   geo: {

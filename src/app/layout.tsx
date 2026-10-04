@@ -70,6 +70,34 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                function cleanExtensionAttrs(node) {
+                  if (node.nodeType === 1) {
+                    if (node.hasAttribute('bis_skin_checked')) node.removeAttribute('bis_skin_checked');
+                    for (var i = 0; i < node.children.length; i++) {
+                      cleanExtensionAttrs(node.children[i]);
+                    }
+                  }
+                }
+                if (typeof window !== 'undefined') {
+                  document.addEventListener('DOMContentLoaded', function() { cleanExtensionAttrs(document.body); });
+                  var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                      if (mutation.type === 'attributes') {
+                        if (mutation.attributeName === 'bis_skin_checked') mutation.target.removeAttribute('bis_skin_checked');
+                        if (mutation.attributeName === 'bis_use') mutation.target.removeAttribute('bis_use');
+                      }
+                    });
+                  });
+                  observer.observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ['bis_skin_checked', 'bis_use'] });
+                }
+              })();
+            `,
+          }}
+        />
         <JsonLd data={organizationSchema()} />
         <JsonLd data={websiteSchema()} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

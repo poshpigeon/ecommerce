@@ -87,7 +87,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
       const detectLocationCurrency = async () => {
         try {
-          // 1. Server-side VPN/IP geo headers detection
+          // 1. Server-side VPN/IP geo headers & backend IP detection
           const geoRes = await fetch('/api/geo');
           const geoData = await geoRes.json();
           if (geoData.success && geoData.country) {
@@ -104,40 +104,12 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
               return;
             }
           }
+        } catch (e) {
+          console.warn('Location API detection failed, attempting timezone fallback:', e);
+        }
 
-          // 2. Fallback browser public IP lookup (essential for localhost testing with VPN)
-          let countryCode = '';
-          try {
-            const fallbackRes = await fetch('https://ipapi.co/json/');
-            const fallbackData = await fallbackRes.json();
-            countryCode = fallbackData.country_code || '';
-          } catch (apiErr) {
-            try {
-              // Try secondary backup API
-              const backupRes = await fetch('https://freeipapi.com/api/json');
-              const backupData = await backupRes.json();
-              countryCode = backupData.countryCode || '';
-            } catch (backupErr) {
-              console.warn('All public IP APIs failed:', backupErr);
-            }
-          }
-
-          if (countryCode) {
-            if (countryCode === 'MY') {
-              setCurrencyState('MYR');
-              sessionStorage.setItem('detected_geo_currency', 'MYR');
-              setIsLoaded(true);
-              return;
-            }
-            if (countryCode === 'IN') {
-              setCurrencyState('INR');
-              sessionStorage.setItem('detected_geo_currency', 'INR');
-              setIsLoaded(true);
-              return;
-            }
-          }
-
-          // 3. Timezone detection (fallback if network checks did not yield results)
+        // 2. Client Timezone detection (instant, offline-safe, zero network)
+        try {
           const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
           if (tz) {
             if (tz.includes('Kuala_Lumpur')) {
@@ -153,8 +125,8 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
               return;
             }
           }
-        } catch (e) {
-          console.warn('Location detection failed, defaulting:', e);
+        } catch (tzErr) {
+          console.warn('Timezone detection failed, defaulting to INR:', tzErr);
         } finally {
           setIsLoaded(true);
         }

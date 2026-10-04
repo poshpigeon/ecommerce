@@ -52,7 +52,7 @@ function formatServerPrice(priceInINR: number) {
 
 export default function AboutPage() {
   return (
-    <main className="bg-bone min-h-screen pt-12 pb-0 space-y-16 md:space-y-24 overflow-x-hidden">
+    <main className="bg-bone min-h-screen pt-2 md:pt-4 pb-0 space-y-12 md:space-y-16 overflow-x-hidden">
       {/* SEO JSON-LD */}
       <JsonLd data={organizationSchema()} />
       <JsonLd data={faqSchema(aboutFaqs)} />
@@ -64,7 +64,7 @@ export default function AboutPage() {
       />
 
       {/* 01. VIBRANT HERO */}
-      <section className="relative min-h-[65vh] flex flex-col justify-center overflow-hidden py-8 md:py-12">
+      <section className="relative overflow-hidden py-4 md:py-8">
         {/* Soft colorful ambient glowing background blobs */}
         <div className="absolute top-10 left-10 w-[300px] h-[300px] bg-amber-200/40 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-rose-200/30 rounded-full blur-[120px] pointer-events-none" />

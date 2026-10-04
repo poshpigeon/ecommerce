@@ -9,7 +9,7 @@ import Container from './Container';
  */
 export default function Footer() {
   return (
-    <footer className="bg-onyx text-white rounded-t-[2.5rem] md:rounded-t-[3rem] py-10 md:py-16 relative overflow-hidden mt-6 md:mt-10 pb-16 md:pb-12">
+    <footer suppressHydrationWarning className="bg-onyx text-white rounded-t-[2.5rem] md:rounded-t-[3rem] py-10 md:py-16 relative overflow-hidden mt-6 md:mt-10 pb-16 md:pb-12">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 border-b border-white/10 pb-12 md:pb-16">
           {/* Brand & Newsletter */}
@@ -51,17 +51,18 @@ export default function Footer() {
               {
                 title: 'Policy',
                 links: [
-                  { name: 'Size Guide', href: '/about' },
-                  { name: 'Returns & Replacements', href: '/about' },
-                  { name: 'About Us', href: '/about' },
+                  { name: 'Privacy Policy', href: '/privacy-policy' },
+                  { name: 'Terms & Conditions', href: '/terms-and-conditions' },
+                  { name: 'Returns & Refunds', href: '/refund-policy' },
+                  { name: 'Shipping Policy', href: '/shipping-policy' },
                 ],
               },
               {
                 title: 'Support',
                 links: [
-                  { name: 'Order Tracking', href: '/orders' },
-                  { name: 'Privacy Policy', href: '/about' },
-                  { name: 'Secure Payment', href: '/about' },
+                  { name: 'Track Order', href: '/orders' },
+                  { name: 'Contact Us', href: '/contact' },
+                  { name: 'About Us', href: '/about' },
                 ],
               },
             ].map((col) => (

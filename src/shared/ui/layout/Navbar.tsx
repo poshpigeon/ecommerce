@@ -94,7 +94,7 @@ export default function Navbar({ user, signInUrl }) {
                 aria-label="Select Currency"
                 aria-expanded={isCurrencyDropdownOpen}
               >
-                <span>{currency === 'INR' ? 'INR (₹)' : 'MYR (RM)'}</span>
+                <span suppressHydrationWarning>{currency === 'INR' ? 'INR (₹)' : 'MYR (RM)'}</span>
                 <ChevronDown className={`w-2.5 h-2.5 transition-transform duration-200 ${isCurrencyDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
